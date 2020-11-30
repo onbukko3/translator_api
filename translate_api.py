@@ -12,6 +12,8 @@ from googletrans import Translator
 import clipboard
 import json
 
+import url_requset_utils as utils
+
 def getting_auth(filename):
     dirlist = os.listdir()
     if filename in dirlist:
@@ -31,7 +33,8 @@ PAPAGO_USER_ID     =   id # client ID
 PAPAGO_USER_SECRET =   secret # client secret
 #GOOGLE_USER_ID=""
 #GOOGLE_USER_SECRET=""
-LANGUAGE_LIST = ["ko","en","ja",""]
+LANGUAGE_LIST = utils.getting_lang_list()
+lang_pairs = utils.gettting_lang_pair_dict()
 text = ""
 result = ""
 
@@ -195,15 +198,40 @@ class ConsoleTranslation():
 #     ex.show()
 #     sys.exit(app.exec_())
 
-def get
+def get_first_input(input, type):
+    if not input:
+        if type == "src":
+            input = "ko"
+        if type == "tgt":
+            input = "en"
+    return input.lower()
+
+def pairing_check(src, tgt, lang_pairs):
+    pair = src, tgt
+    if pair in lang_pairs:
+        return True
+    else:
+        return False
+
 
 def main():
     while True:
-        src = input("src: ") or "ko"
-        tgt = input("tgt: ") or "en"
+        while True:
+            src = get_first_input(input("src: "), "src")
+            if src not in LANGUAGE_LIST:
+                print("Please consider again, Available Languages: {}".format(', '.join(LANGUAGE_LIST)))
+            else:
+                break
+        while True:
+            tgt = get_first_input(input("tgt: "), "tgt")
+            if tgt not in LANGUAGE_LIST:
+                print("Please consider again, Available Languages: {}".format(', '.join(LANGUAGE_LIST)))
+            else:
+                break
         while(1):
-            output = ConsoleTranslation(src, tgt).translate()
-            if not output:
+            if pairing_check(src, tgt, lang_pairs):
+                output = ConsoleTranslation(src, tgt).translate()
+            else:
                 break
 
 

@@ -2,6 +2,8 @@ import re
 import requests
 from bs4 import BeautifulSoup as bs
 
+url = "https://developers.naver.com/docs/papago/papago-nmt-api-reference.md"
+
 def getting_slicing_point(word, string):
     max_index = 0
     for char in string:
@@ -41,7 +43,7 @@ def src_tgt_dict_list(outputs):
                     pair_list.append(pair)
     return pair_list
 
-def getting_lang_list(url):
+def getting_lang_list():
     respond = requests.get(url)
     html = respond.text
     soup = bs(html, 'html.parser')
@@ -58,7 +60,7 @@ def getting_lang_list(url):
             output_list.append(row)
     return output_list
 
-def gettting_lang_pair_dict(url):
+def gettting_lang_pair_dict():
     respond = requests.get(url)
     html = respond.text
     soup = bs(html, 'html.parser')
