@@ -1,4 +1,4 @@
 pyperclip
 requests
-PyQt
-
+PyQt5
+google_trans_new
