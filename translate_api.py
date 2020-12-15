@@ -8,7 +8,7 @@ from PyQt5 import QtCore, uic
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from googletrans import Translator
+from google_trans_new import google_translator
 import clipboard
 
 PAPAGO_USER_ID     = "1c0wBPCSWqAmoLohd3wV"  # client ID
@@ -59,6 +59,14 @@ class inputdialogdemo(QWidget):
         self.btn1.resize(30,30)
         self.btn1.pressed.connect(self.translate)
 
+        self.btn2 = QPushButton("Please use the google!")
+        # self.btn2.setCheckable(True)
+        self.btn2.toggle()
+        self.btn2.setFont(font)
+        self.btn2.setStyleSheet('color: white; background: green')
+        self.btn2.resize(30, 30)
+        self.btn2.clicked.connect(self.translate_google)
+
         self.le1 = QTextEdit()
         self.le1.setFont(font)
         self.le1.setTabChangesFocus(True)
@@ -66,6 +74,7 @@ class inputdialogdemo(QWidget):
         # self.le2.setFont(font)
         # self.le2.setTabChangesFocus(True)
         layout.addWidget(self.btn1)
+        layout.addWidget(self.btn2)
         layout.addWidget(self.le1)
         # layout.addWidget(self.le2)
 
@@ -90,8 +99,11 @@ class inputdialogdemo(QWidget):
             # try:
                 if self.target == "en":
                     ## Naver Papago translation for english
+                    # print(self.btn2.isChecked())
+                    # if self.btn2.checkStateSet():
+                    #     result= self.google_trans("en",result)
+                    # else:
                     result = self.naver_trans("ko", self.target,text)
-                    result_en_de = self.google_trans("de",result)
                     # result_ko_de = self.naver_trans("ko","de",text)
                     self.le1.setText(str(text) + '\n' + str(result))
                     clipboard.copy(str(text) + '\n' + str(result))
@@ -106,7 +118,7 @@ class inputdialogdemo(QWidget):
                         with open("history.txt", 'a') as history:
                             if last_day != date.day:
                                 history.writelines('-------------- '+date.isoformat()+' ---------------'+'\n')
-                            history.writelines('\n'+ text + '\n' + result + '\n' + result_en_de + '\n')
+                            history.writelines('\n'+ text + '\n' + result  + '\n')
                             history.close()
                     except OSError:
                         print('cannot open', history)
@@ -120,6 +132,45 @@ class inputdialogdemo(QWidget):
                     clipboard.copy(str(text) + '\n' + str(result))
             # except:
             #     return self.le1.setText('Translation failed')
+    def translate_google(self):
+        global PAPAGO_USER_ID, PAPAGO_USER_SECRET, text, result
+        # text = self.le.text()
+        text = self.le.toPlainText()
+        self.le.clear()
+        if text:
+            if self.target == "en":
+                ## Naver Papago translation for english
+                # print(self.btn2.isChecked())
+                # if self.btn2.checkStateSet():
+                result= self.google_trans("en",text)
+                # else:
+                # result = self.naver_trans("ko", self.target, text)
+                # result_ko_de = self.naver_trans("ko","de",text)
+                self.le1.setText(str(text) + '\n' + str(result))
+                clipboard.copy(str(text) + '\n' + str(result))
+
+                date = datetime.datetime.today()
+                try:
+                    last_day = int(time.ctime(os.path.getmtime('history.txt'))[8:10])
+                except:
+                    last_day = 0
+
+                try:
+                    with open("history.txt", 'a') as history:
+                        if last_day != date.day:
+                            history.writelines('-------------- ' + date.isoformat() + ' ---------------' + '\n')
+                        history.writelines('\n' + text + '\n' + result + '\n')
+                        history.close()
+                except OSError:
+                    print('cannot open', history)
+
+            elif self.target == "de":
+                ## Google translation for German
+                result = self.google_trans(self.target, text)
+                # result_naver = self.naver_trans("en",self.target,text)
+                self.le1.setText('src)\n' + str(text) + '\n' + 'tgt)\n' + str(result))
+                # self.le2.setText(str(text)+'\n'+ str(result_naver))
+                clipboard.copy(str(text) + '\n' + str(result))
 
     def naver_trans(self,src,tgt,text):
         url = "https://openapi.naver.com/v1/papago/n2mt"
@@ -131,8 +182,8 @@ class inputdialogdemo(QWidget):
         return result
 
     def google_trans(self, tgt, text):
-        translator = Translator()
-        result = translator.translate(text, dest=tgt).text
+        translator = google_translator()
+        result = translator.translate(text, lang_tgt=tgt)
         return result
 
 
