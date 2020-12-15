@@ -1,4 +1,9 @@
-pyperclip
-requests
+pyperclip~=1.8.0
+requests~=2.23.0
 PyQt
 
+
+clipboard~=0.0.4
+keyboard~=0.13.5
+pyqt5~=5.14.2
+beautifulsoup4~=4.6.0
