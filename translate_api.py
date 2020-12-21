@@ -135,7 +135,7 @@ class inputdialogdemo(QWidget):
     def translate_google(self):
         global PAPAGO_USER_ID, PAPAGO_USER_SECRET, text, result
         # text = self.le.text()
-        text = self.le.toPlainText()
+        # text = self.le.toPlainText()
         self.le.clear()
         if text:
             if self.target == "en":
